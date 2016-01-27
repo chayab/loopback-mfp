@@ -26,19 +26,19 @@ function mfp(app, options) {
   // IMPORTANT - passport initialization goes to a different phase
   app.middleware('initial', passport.initialize());
 
+  var auth = function(scopes) {
+		return passport.authenticate('mobilefirst-strategy', {
+			session: false,
+			scope: scopes
+		});
+	}
+  
   var authRouter = app.loopback.Router();
 
   // Setup per-route authentication (and possibly other things too)
   for (var route in options.routes) {
     for (var verb in options.routes[route]) {
       var config = options.routes[route][verb];
-
-	var auth = function(scopes) {
-		return passport.authenticate('mobilefirst-strategy', {
-			session: false,
-			scope: scopes
-		});
-	}
 
       authRouter[verb.toLowerCase()](route, auth(config.authRealm), cont);
 	  console.log("Adding to authRouter: route: "+route +".authRealm: "+config.authRealm+". verb = "+verb.toLowerCase());
